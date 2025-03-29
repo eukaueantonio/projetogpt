@@ -5,53 +5,52 @@ async function sendMessage() {
 
     if (!userMessage) return;
 
-    // Adicionar mensagem do usuário 
-    const userDiv = document.getElementById("div");
+    // Adiciona mensagem do usuário
+    const userDiv = document.createElement("div");
     userDiv.className = "user-message message";
     userDiv.textContent = userMessage;
     chatBox.appendChild(userDiv);
 
-    // Limpar o campo de entrada 
+    // Limpa o campo de entrada
     userInput.value = "";
 
-    // Fazer scroll automático para a última mensagem
+    // Faz scroll automático para a última mensagem
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Configuração do endpoint e chave da API
+    // Configurações do endpoint e chave da API
     const endpoint = "https://kaue-m8rymvaj-swedencentral.openai.azure.com";
     const apiKey = "DaKLUeme827QdEw3sc6WNjcKlvU6gnXP05VTIEei7QZ6N3hS6eVKJQQJ99BCACfhMk5XJ3w3AAAAACOGdoiC";
     const deploymentId = "gpt-35-turbo"; // Nome do deployment no Azure OpenAI
-    const apiVersion = "2024-05-01-preview"; // Verefique a versão na documentação 
+    const apiVersion = "2024-05-01-preview"; // Verifique a versão na documentação
 
-    // URL par aa chamada da API
+    // URL para a chamada da API
     const url = `${endpoint}/openai/deployments/${deploymentId}/chat/completions?api-version=${apiVersion}`;
 
-    // Configuração do corpo da requisição
+    // Configurações do corpo da requisição
     const data = {
-        message: [{ role: "user", content: userMessage }],
+        messages: [{ role: "user", content: userMessage }],
         max_tokens: 50
     };
 
     // Cabeçalhos da requisição
     const headers = {
-        "Content-Type": "aplication/json",
+        "Content-Type": "application/json",
         "api-key": apiKey
     };
 
     try {
-        //Faz requisição com fetch
-        const response = await fetch(url,{
+        // Faz a requisição com fetch
+        const response = await fetch(url, {
             method: "POST",
             headers: headers,
             body: JSON.stringify(data)
-
         });
 
         if (response.ok) {
             const result = await response.json();
             const botMessage = result.choices[0].message.content;
 
-            // Adicionar a resposta do bot
+            // Adiciona a resposta do bot
             const botDiv = document.createElement("div");
             botDiv.className = "bot-message message";
             botDiv.textContent = botMessage;
@@ -59,22 +58,20 @@ async function sendMessage() {
 
             // Faz scroll automático para a última mensagem
             chatBox.scrollTop = chatBox.scrollHeight;
-
         } else {
-            console.error("Error na requisição", response.status, response.statusText);
+            console.error("Erro na requisição:", response.status, response.statusText);
 
             const botDiv = document.createElement("div");
             botDiv.className = "bot-message message";
-            botDiv.textContent = "Erro ao se comunicar com o serviço";
+            botDiv.textContent = "Erro ao se comunicar com o serviço.";
             chatBox.appendChild(botDiv);
         }
-
     } catch (error) {
-        console.error("Error :", error);
+        console.error("Erro:", error);
 
         const botDiv = document.createElement("div");
         botDiv.className = "bot-message message";
-        botDiv.textContent = "Erro ao se comunicar com o serviço";
+        botDiv.textContent = "Erro ao se comunicar com o serviço.";
         chatBox.appendChild(botDiv);
-    };
+    }
 }
